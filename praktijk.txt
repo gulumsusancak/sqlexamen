@@ -1,0 +1,81 @@
+*Praktijk
+1:
+SELECT *
+FROM employees;
+
+2:
+SELECT first_name,last_name,salaries.salary
+FROM employees
+LEFT JOIN salaries ON employees.emp_no=salaries.emp_no
+HAVING salaries.salary>50000
+LIMIT 3;
+
+3:
+SELECT departments.dept_name,COUNT(dept_emp.emp_no) as aantal 
+FROM departments
+LEFT JOIN dept_emp ON departments.dept_no=dept_emp.dept_no
+GROUP BY departments.dept_no
+order by dept_name;
+
+4:
+SELECT concat(employees.first_name,employees.last_name) as naam, MAX(salaries.salary) as hoogste_salaris,dept_emp.dept_no
+FROM employees
+LEFT JOIN salaries ON employees.emp_no=salaries.emp_no
+LEFT JOIN dept_emp on salaries.emp_no=dept_emp.emp_no
+GROUP BY salaries.salary
+order BY salaries.salary desc
+LIMIT 1;
+
+5:
+SELECT * 
+FROM employees
+WHERE gender = 'F' AND (last_name LIKE 'D%' AND hire_date > '1997-01-01');
+
+
+*Advanced Queries
+1:
+SELECT customer.customer_id,customer.first_name,customer.last_name,SUM(payment.amount) as totale_inkomsten
+FROM customer
+LEFT JOIN rental ON customer.customer_id=rental.customer_id
+LEFT JOIN payment on rental.customer_id=payment.customer_id
+WHERE rental.rental_id>5
+GROUP BY customer.customer_id;
+
+2:
+SELECT category.name as category_naam, AVG(film.length) as gemiddelde_filmduur 
+FROM film
+LEFT JOIN film_category ON film.film_id=film_category.film_id
+LEFT JOIN category ON film_category.category_id=category.category_id
+GROUP by category.name
+ORDER by category.name ASC;
+
+
+*Functie : count_films_by_category_name
+
+DELIMITER $$
+CREATE FUNCTION count_films_by_category_name(category_name VARCHAR(50))
+RETURNS INT DETERMINISTIC
+BEGIN
+DECLARE movie_count INT;
+SELECT COUNT(film_id) INTO movie_count
+FROM film_category
+INNER JOIN category on film_category.category_id = category.category_id
+WHERE category.name = category_name;
+RETURN movie_count;
+END $$
+DELIMITER ; 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
